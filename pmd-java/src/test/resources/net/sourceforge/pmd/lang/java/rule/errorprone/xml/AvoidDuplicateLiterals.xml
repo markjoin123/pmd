@@ -204,4 +204,148 @@ public class AnnotationParams {
 }
         ]]></code>
     </test-code>
+
+    <test-code>
+        <description>#7274 parenthesized string literal counts as an occurrence</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>2</expected-linenumbers>
+        <expected-messages>
+            <message>The String literal "Hello, world" appears 4 times in this file; the first occurrence is on line 2</message>
+        </expected-messages>
+        <code><![CDATA[
+public class Foo {
+    String a() { return "Hello, world"; }
+    String b() { return "Hello, world"; }
+    String c() { return "Hello, world"; }
+    String d() { return ("Hello, world"); }
+}
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>#7274 nested and spaced parentheses still count</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>2</expected-linenumbers>
+        <expected-messages>
+            <message>The String literal "Hello, world" appears 4 times in this file; the first occurrence is on line 2</message>
+        </expected-messages>
+        <code><![CDATA[
+public class Foo {
+    String a() { return ("Hello, world"); }
+    String b() { return (("Hello, world")); }
+    String c() { return ( "Hello, world" ); }
+    String d() { return "Hello, world"; }
+}
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>#7274 three parenthesized occurrences stay under the default threshold</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class Foo {
+    String a() { return "Hello, world"; }
+    String b() { return ("Hello, world"); }
+    String c() { return (("Hello, world")); }
+}
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>#7274 parentheses do not count toward minimumLength</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class Foo {
+    String a() { return ("fo"); }
+    String b() { return ("fo"); }
+    String c() { return (("fo")); }
+    String d() { return ( "fo" ); }
+}
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>#7274 exceptionList matches the literal spelling, not the parentheses</description>
+        <rule-property name="exceptionList">Howdy\, world</rule-property>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class Foo {
+    String a() { return ("Howdy, world"); }
+    String b() { return ("Howdy, world"); }
+    String c() { return ("Howdy, world"); }
+    String d() { return ("Howdy, world"); }
+}
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>#7274 different source spellings are not the same literal</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class Foo {
+    String a() { return "Hello, world"; }
+    String b() { return "Hello, world"; }
+    String c() { return "Hello, world"; }
+    String d() { return ("Hello,\sworld"); }
+}
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>#7274 parenthesized text block counts with the same text block</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>3</expected-linenumbers>
+        <expected-messages>
+            <message>The String literal "Hello, world\n" appears 4 times in this file; the first occurrence is on line 3</message>
+        </expected-messages>
+        <code><![CDATA[
+public class Foo {
+    String a() {
+        return """
+            Hello, world
+            """;
+    }
+    String b() {
+        return """
+            Hello, world
+            """;
+    }
+    String c() {
+        return """
+            Hello, world
+            """;
+    }
+    String d() {
+        return ("""
+            Hello, world
+            """);
+    }
+}
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>#7274 text block is not the same literal as a regular string with the same value</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class Foo {
+    String a() {
+        return """
+            Hello, world
+            """;
+    }
+    String b() {
+        return """
+            Hello, world
+            """;
+    }
+    String c() {
+        return ("""
+            Hello, world
+            """);
+    }
+    String d() { return "Hello, world\n"; }
+}
+        ]]></code>
+    </test-code>
 </test-data>

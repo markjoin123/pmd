@@ -96,6 +96,11 @@ public class AvoidDuplicateLiteralsRule extends AbstractJavaRulechainRule {
 
     @Override
     public Object visit(ASTStringLiteral node, Object data) {
+        // Key by the literal's source text. Node text (getText()/getImage())
+        // includes surrounding parentheses, so a parenthesized literal would
+        // not match the same spelling. The constant value is not the key:
+        // minimumLength and exceptionList apply to the source spelling, and
+        // text blocks stay distinct from regular strings with the same value.
         String image = node.getLiteralText().toString();
 
         // just catching strings of 'minLength' chars or more (including the
